@@ -1,0 +1,205 @@
+{
+  "entreprises": [
+    {
+      "nom": "RTE CDI NANCY",
+      "adresse": {
+        "rue": "8, Rue de Versigny",
+        "ville": "VILLERS LES NANCY",
+        "code_postal": "54608",
+        "pays": "France"
+      },
+      "personnel": [
+        {
+          "prenom": "Frédéric",
+          "nom": "LALLEMENT",
+          "email": "frederic.lallement@rte-france.com"
+        },
+        {
+          "prenom": "Alexandre",
+          "nom": "BARETTE",
+          "email": "alexandre.barette@rte-france.com"
+        },
+        {
+          "prenom": "Patrice",
+          "nom": "PINNA",
+          "email": "patrice.pinna@rte-france.com"
+        },
+        {
+          "prenom": "Emmanuel",
+          "nom": "RAMIRES",
+          "email": "emmanuel.ramires@rte-france.com"
+        },
+        {
+          "nom": "PIEDFER",
+          "prenom": "Daniel",
+          "email": "daniel.piedfer@rte-france.com"
+        }
+      ]
+    },
+    {
+      "nom": "ENEDIS BRIPS NANCY",
+      "adresse": {
+        "rue": "2, Boulevard Cattenoz",
+        "ville": "VILLERS LES NANCY",
+        "code_postal": "54602",
+        "pays": "FRANCE"
+      },
+      "personnel": [
+        {
+          "prenom": "Clément",
+          "nom": "COLONNA",
+          "email": "clement.colonna@enedis.fr"
+        },
+        {
+          "prenom": "Clément",
+          "nom": "VACHEZ",
+          "email": "clement.vachez@enedis.fr"
+        }
+      ]
+    },
+    {
+      "nom": "OMEXOM NANCY - CHANTIER",
+      "adresse": {
+        "rue": "2, Rue du Bois Jacquot",
+        "ville": "MILLERY",
+        "code_postal": "54670",
+        "pays": "FRANCE"
+      },
+      "personnel": [
+        {
+          "prenom": "Mohammed",
+          "nom": "AICH",
+          "email": "mohammed.aich@omexom.com"
+        },
+        {
+          "prenom": "Ludovic",
+          "nom": "CREPIN",
+          "email": "ludovic.crepin@omexom.com"
+        },
+        {
+          "prenom": "Stéphane",
+          "nom": "DEMANDRILLE",
+          "email": "stephane.demandrille@omexom.com"
+        },
+        {
+          "prenom": "Mathieu",
+          "nom": "LE GAC",
+          "email": "mathieu.legac@omexom.com"
+        },
+        {
+          "prenom": "Emmanuel",
+          "nom": "GAITA",
+          "email": "emmanuel.gaita@omexom.com"
+        },
+        {
+          "prenom": "Mathieu",
+          "nom": "MERLIER",
+          "email": "mathieu.merlier@omexom.com"
+        },
+        {
+          "prenom": "Gérald",
+          "nom": "GUILLAUME",
+          "email": "gerald.guillaume@omexom.com"
+        },
+        {
+          "nom": "CAROLLE",
+          "prenom": "Kelian",
+          "email": "kelian.carolle@omexom.com"
+        }
+      ]
+    },
+    {
+      "nom": "PIAZZA BATIMENT",
+      "adresse": {
+        "rue": "11, Rue Saint Eloi - ZI St Eloi",
+        "ville": "CREPY EN VALOIS",
+        "code_postal": "60800",
+        "pays": "FRANCE"
+      },
+      "personnel": [
+        {
+          "nom": "RASSENEUR",
+          "prenom": "Audrey",
+          "email": "a.rasseneur@piazza-batiment.com"
+        },
+        {
+          "nom": "DEVAUX",
+          "prenom": "Christophe",
+          "email": "c.devaux@piazza-batiment.com"
+        },
+        {
+          "nom": "DORANGEVILLE",
+          "prenom": "Nicolas",
+          "email": "n.dorangeville@piazza-batiment.com"
+        }
+      ]
+    },
+    {
+      "nom": "RTE CDI PARIS",
+      "adresse": {
+        "rue": "Immeuble Window 7C - Place du Dôme",
+        "ville": "LA DEFENSE Cedex",
+        "code_postal": "92073",
+        "pays": "FRANCE"
+      },
+      "personnel": [
+        {
+          "nom": "TRENTIN",
+          "prenom": "Magali",
+          "email": "magali.trentin@rte-france.com"
+        }
+      ]
+    },
+    {
+      "nom": "OMEXOM NANCY - BUREAUX",
+      "adresse": {
+        "rue": "2, Rue du Bois Jacquot",
+        "ville": "MILLERY",
+        "code_postal": "54670",
+        "pays": "FRANCE"
+      },
+      "personnel": [
+        {
+          "nom": "AGOSTINI",
+          "prenom": "Yannick",
+          "email": "yannick.agostini@omexom.com"
+        },
+        {
+          "nom": "BECHET",
+          "prenom": "Florian",
+          "email": "florian.bechet@omexom.com"
+        },
+        {
+          "nom": "KIRCH",
+          "prenom": "Benjamin",
+          "email": "benjamin.kirch@omexom.com"
+        },
+        {
+          "nom": "NOBLET",
+          "prenom": "Ludovic",
+          "email": "ludovic.noblet@omexom.com"
+        },
+        {
+          "nom": "FONTAINE",
+          "prenom": "Patrice",
+          "email": "patrice.fontaine@omexom.com"
+        },
+        {
+          "nom": "AUBERT",
+          "prenom": "Grégoire",
+          "email": "gregoire.aubert@omexom.com"
+        },
+        {
+          "nom": "BARTHELEMY",
+          "prenom": "Guillaume",
+          "email": "guillaume.barthelemy@omexom.com"
+        },
+        {
+          "nom": "VALENTIN",
+          "prenom": "Franck",
+          "email": "franck.valentin@omexom.com"
+        }
+      ]
+    }
+  ]
+}
