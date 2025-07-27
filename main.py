@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 import ttkbootstrap as ttk
 from contacts import ContactsApp
+from tkinter import filedialog
+from ttkbootstrap.dialogs import Messagebox
 import openpyxl
 import re
+import locale
+from generer_pdf import DispatchDocument
 
 
 @dataclass
@@ -33,7 +37,7 @@ class ExcelDocument:
         "V2": "Dossier V2",
         "CAE": "Conforme à exécution"
     }
-    PROJECT_PATTERN = r"^(?P<rank>[^-]+)-(?P<project>.+)-(?P<number>[^-]+)$"
+    PROJECT_PATTERN = r"^NANCY-(?P<rank>[^-]+)-(?P<project>[^-]+)-(?P<number>[^-]+)$"
     SENDING_INFO_PATTERN = r"@(?P<receiver>.+?)\s+\((?P<company>.+?)\)\s+#(?P<title>.+)"
 
 
@@ -68,13 +72,13 @@ class dispatchApp:
         style = ttk.Style()
         style.theme_use("yeti")
 
-        # Frame principale - réduire le padding général
+        # Frame principale
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.pack(fill="both", expand=True)
 
         # Sélection du fichier
-        file_section = ttk.LabelFrame(main_frame, text="Séléction du fichier", padding="10")  # Réduit de 20 à 10
-        file_section.pack(fill="x", padx=5, pady=(0, 10))  # Réduit padx de 10 à 5 et pady de 20 à 10
+        file_section = ttk.LabelFrame(main_frame, text="Séléction du fichier", padding="10")
+        file_section.pack(fill="x", padx=5, pady=(0, 10))
 
         self.search_var = ttk.StringVar()
         self.search_entry = ttk.Entry(
@@ -95,14 +99,6 @@ class dispatchApp:
         # Section formulaire
         form_section = ttk.LabelFrame(main_frame, text="Informations du document", padding="10")  # Réduit de 20 à 10
         form_section.pack(fill="both", expand=True, padx=10)  # Réduit padx de 10 à 5
-
-        # Extraction des informations du projet
-        # match = re.match(ExcelDocument.PROJECT_PATTERN, InformationExcelCells.PROJECT)
-        # result = match.groupdict()
-        # if match:
-        #     rank = result['rank']
-        #     project = result['project']
-        #     number = result['number']
 
         # Variables pour les champs du formulaire
         self.form_vars = {
@@ -231,7 +227,8 @@ class dispatchApp:
         self.form_vars.update({
             'mail': ttk.BooleanVar(),
             'transfer': ttk.BooleanVar(),
-            'courier': ttk.BooleanVar()
+            'courrier': ttk.BooleanVar(),
+            'acc': ttk.BooleanVar()
         })
 
         # Checkbox
@@ -249,8 +246,14 @@ class dispatchApp:
 
         ttk.Checkbutton(
             means_container,
-            text="Courier",
-            variable=self.form_vars['courier']
+            text="Courrier",
+            variable=self.form_vars['courrier']
+        ).pack(side="left", padx=10)
+
+        ttk.Checkbutton(
+            means_container,
+            text="Plateforme ACC",
+            variable=self.form_vars['acc']
         ).pack(side="left", padx=10)
 
         # Conteneur pour le bouton Générer PDF
@@ -258,20 +261,165 @@ class dispatchApp:
         button_container.pack(side="bottom", fill="x", padx=5, pady=10)
 
         # Bouton Générer PDF
-        generate_button = ttk.Button(
+        self.generate_button = ttk.Button(
             button_container,
             text="Générer le PDF",
             command=self.generate_pdf,
             style="primary",
-            width=20
+            width=20,
+            state="disabled"
         )
-        generate_button.pack(side="right")
+        self.generate_button.pack(side="right")
+
+        # Traces pour la validation
+        self.search_var.trace_add('write', self.validate_form)
+        for var_name in self.form_vars:
+            self.form_vars[var_name].trace_add('write', self.validate_form)
 
     def browse_file(self):
-        pass
+        filetypes = [("Fichiers Excel", "*.xlsx")]
+        filename = filedialog.askopenfilename(
+            title="Sélectionner un fichier Excel",
+            filetypes=filetypes,
+            initialdir="~"  # Commence dans le répertoire utilisateur
+        )
+
+        if filename:
+            self.search_var.set(filename)  # Met à jour le champ de texte avec le chemin du fichier
+            self.load_excel_data(filename)
+
+    def load_excel_data(self, filename):
+        try:
+            workbook = openpyxl.load_workbook(filename)
+
+            # Charger les données de la page de garde
+            info_sheet = workbook[self.info_excel_cells.INFO_WORKSHEET]
+
+            # Récupérer les données du projet
+            project_value = info_sheet[self.info_excel_cells.PROJECT].value
+            if project_value:
+                match = re.match(ExcelDocument.PROJECT_PATTERN, str(project_value))
+                if match:
+                    result = match.groupdict()
+                    self.form_vars['rank'].set(result['rank'])
+                    self.form_vars['project'].set(result['project'])
+                    self.form_vars['number'].set(result['number'])
+
+            # Récupérer les informations d'envoi
+            sending_info = info_sheet[self.info_excel_cells.SENDING_INFO].value
+            if sending_info:
+                match = re.match(ExcelDocument.SENDING_INFO_PATTERN, str(sending_info))
+                if match:
+                    result = match.groupdict()
+                    self.form_vars['receiver'].set(result['receiver'])
+                    self.form_vars['company'].set(result['company'])
+                    self.form_vars['title'].set(result['title'])
+
+            # Charger les autres champs
+            date_value = info_sheet[self.info_excel_cells.DATE].value
+            if date_value:
+                # Convertir en chaîne et supprimer les 5 derniers caractères
+                date_str = str(date_value)[:-6]
+                self.form_vars['date'].set(date_str)
+            else:
+                self.form_vars['date'].set('')
+
+            self.form_vars['id'].set(info_sheet[self.info_excel_cells.ID].value or '')
+            self.form_vars['sender'].set(info_sheet[self.info_excel_cells.SENDER].value or '')
+            self.form_vars['files_quantity'].set(info_sheet[self.info_excel_cells.FILES_QUANTITY].value or '')
+
+            # Pour le champ message qui est un widget Text
+            message_value = info_sheet[self.info_excel_cells.MESSAGE].value or ''
+            self.message_widget.delete('1.0', 'end')
+            self.message_widget.insert('1.0', message_value)
+
+            workbook.close()
+
+        except Exception as e:
+            message = f"Erreur lors du chargement du fichier Excel : {str(e)}"
+            ttk.Messagebox.show_error(
+                title="Erreur",
+                message=message
+            )
+
+    def validate_form(self, *args):
+        # Vérifier que le fichier est sélectionné
+        if not self.search_var.get():
+            self.generate_button.configure(state="disabled")
+            return
+
+        # Liste des champs obligatoires (excluant title et message)
+        required_fields = ['rank', 'project', 'number', 'date', 'id',
+                           'sender', 'receiver', 'company', 'files_quantity']
+
+        # Vérifier les champs obligatoires
+        for field in required_fields:
+            if not self.form_vars[field].get():
+                self.generate_button.configure(state="disabled")
+                return
+
+        # Vérifier qu'un statut est sélectionné
+        if not self.form_vars['status'].get():
+            self.generate_button.configure(state="disabled")
+            return
+
+        # Vérifier le délai si BPO ou APPRO est sélectionné
+        if self.form_vars['status'].get() in ["BPO", "APPRO"]:
+            if not self.form_vars['response_delay'].get():
+                self.generate_button.configure(state="disabled")
+                return
+
+        # Vérifier qu'au moins une checkbox est cochée
+        if not any([
+            self.form_vars['mail'].get(),
+            self.form_vars['transfer'].get(),
+            self.form_vars['courrier'].get(),
+            self.form_vars['acc'].get()
+        ]):
+            self.generate_button.configure(state="disabled")
+            return
+
+        # Si toutes les validations sont passées, activer le bouton
+        self.generate_button.configure(state="normal")
 
     def generate_pdf(self):
-        pass
+
+        # Récupérer le message depuis le widget Text
+        message = self.message_widget.get("1.0", "end-1c")
+
+        # Créer un dictionnaire avec toutes les données
+        form_data = {
+            'excel_file': self.search_var.get(),
+            # Informations du document
+            'rank': self.form_vars['rank'].get(),
+            'project': self.form_vars['project'].get(),
+            'number': self.form_vars['number'].get(),
+            'date': self.form_vars['date'].get(),
+            'id': self.form_vars['id'].get(),
+            'title': self.form_vars['title'].get(),
+            'sender': self.form_vars['sender'].get(),
+            'receiver': self.form_vars['receiver'].get(),
+            'company': self.form_vars['company'].get(),
+            'files_quantity': self.form_vars['files_quantity'].get(),
+            'message': message,
+
+            # Type de diffusion
+            'status': self.form_vars['status'].get(),
+            'status_text': ExcelDocument.STATUS[self.form_vars['status'].get()],  # Texte complet du statut
+            'response_delay': self.form_vars['response_delay'].get(),
+
+            # Modes de transmission
+            'transmission_modes': {
+                'mail': self.form_vars['mail'].get(),
+                'transfer': self.form_vars['transfer'].get(),
+                'courrier': self.form_vars['courrier'].get(),
+                'acc': self.form_vars['acc'].get()
+            }
+        }
+
+        # Créer l'instance de DispatchDocument avec les données
+        document = DispatchDocument(form_data)
+        document.generate_pdf()
 
 
 if __name__ == "__main__":
